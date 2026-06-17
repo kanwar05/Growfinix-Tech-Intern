@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    @apply min-w-80 scroll-smooth bg-slate-50 text-slate-950 antialiased dark:bg-slate-950 dark:text-slate-100;
+  }
+
+  body {
+    @apply m-0 min-h-screen font-sans;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed opacity-70;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  ::selection {
+    @apply bg-blue-600 text-white;
+  }
+}
+
+@layer components {
+  .markdown-surface {
+    @apply text-slate-700 dark:text-slate-200;
+    overflow-wrap: anywhere;
+  }
+
+  .markdown-surface h1,
+  .markdown-surface h2,
+  .markdown-surface h3 {
+    @apply mt-6 mb-3 font-bold text-slate-950 dark:text-white;
+  }
+
+  .markdown-surface h1 {
+    @apply text-3xl;
+  }
+
+  .markdown-surface h2 {
+    @apply text-2xl;
+  }
+
+  .markdown-surface h3 {
+    @apply text-xl;
+  }
+
+  .markdown-surface p {
+    @apply my-4 leading-7;
+  }
+
+  .markdown-surface ul,
+  .markdown-surface ol {
+    @apply my-4 pl-6 leading-7;
+  }
+
+  .markdown-surface ul {
+    @apply list-disc;
+  }
+
+  .markdown-surface ol {
+    @apply list-decimal;
+  }
+
+  .markdown-surface a {
+    @apply font-semibold text-blue-600 underline decoration-blue-300 underline-offset-4 dark:text-blue-300;
+  }
+
+  .markdown-surface blockquote {
+    @apply my-5 border-l-4 border-blue-500 bg-blue-50 px-4 py-2 text-slate-600 dark:bg-blue-950/30 dark:text-slate-300;
+  }
+
+  .markdown-surface code {
+    @apply rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-900 dark:bg-slate-800 dark:text-slate-100;
+  }
+
+  .markdown-surface pre {
+    @apply my-5 overflow-x-auto rounded-lg bg-slate-950 p-4 text-sm text-slate-100 shadow-inner;
+  }
+
+  .markdown-surface pre code {
+    @apply bg-transparent p-0 text-slate-100;
+  }
+
+  .markdown-surface hr {
+    @apply my-6 border-slate-200 dark:border-slate-800;
+  }
+}
+
+@layer utilities {
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+  }
+}

@@ -1,110 +1,106 @@
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { setAuthCookie, clearAuthCookie } = require("../utils/authCookie");
 
-const createToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+const sanitizeUser = (user) => {
+  return {
+    id: user._id,
+    email: user.email,
+    createdAt: user.createdAt,
+  };
 };
 
-const sendToken = (res, user) => {
-  const token = createToken(user._id);
-
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
-
-  res.status(200).json({
+const sendToken = (res, user, statusCode = 200) => {
+  setAuthCookie(res, user._id);
+  res.status(statusCode).json({
     success: true,
-    token,
-    user: {
-      id: user._id,
-      email: user.email,
-    },
+    user: sanitizeUser(user),
   });
 };
 
-exports.signup = async (req, res) => {
+exports.register = async (req, res, next) => {
   try {
-    console.log(req.body);
     const { email, password } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return res
         .status(400)
         .json({ success: false, message: "Email and password are required" });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
       return res
         .status(400)
+        .json({ success: false, message: "Please enter a valid email" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res
+        .status(409)
         .json({ success: false, message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = await User.create({
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
     });
 
-    sendToken(res, user);
+    sendToken(res, user, 201);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Sign up failed",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-exports.login = async (req, res) => {
+exports.signup = exports.register;
+
+exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return res
         .status(400)
         .json({ success: false, message: "Email and password are required" });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: normalizedEmail }).select(
+      "+password",
+    );
     if (!user) {
       return res
-        .status(400)
+        .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res
-        .status(400)
+        .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
 
     sendToken(res, user);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Login failed",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: false,
-    sameSite: "1ax",
-  });
+  clearAuthCookie(res);
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
 exports.getMe = async (req, res) => {
-  res.status(200).json({ success: true, user: req.user });
+  res.status(200).json({ success: true, user: sanitizeUser(req.user) });
 };
