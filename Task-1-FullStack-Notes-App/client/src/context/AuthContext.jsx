@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchMe, loginUser, logoutUser, registerUser } from "../api/authApi";
+import {
+  fetchMe,
+  loginUser,
+  logoutUser,
+  registerUser,
+  updatePassword,
+  updateProfile,
+} from "../api/authApi";
 import { AuthContext } from "./authContext";
 
 export const AuthProvider = ({ children }) => {
@@ -38,8 +45,18 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const saveProfile = async (payload) => {
+    const data = await updateProfile(payload);
+    setUser(data.user);
+    return data;
+  };
+
+  const savePassword = async (payload) => {
+    return updatePassword(payload);
+  };
+
   const value = useMemo(
-    () => ({ user, loadingUser, signup, login, logout }),
+    () => ({ user, loadingUser, signup, login, logout, saveProfile, savePassword }),
     [user, loadingUser],
   );
 

@@ -4,7 +4,8 @@ import { FiMoon, FiSun } from "react-icons/fi";
 
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
-  const nextTheme = theme === "dark" ? "light" : "dark";
+  const isDark = document.documentElement.classList.contains("dark");
+  const nextTheme = isDark ? "light" : "dark";
 
   return (
     <Button
@@ -15,7 +16,7 @@ const ThemeToggle = () => {
       title={`Switch to ${nextTheme} mode`}
     >
       <span aria-hidden="true" className="text-base">
-        {theme === "dark" ? <FiSun /> : <FiMoon />}
+        {isDark || theme === "dark" ? <FiSun /> : <FiMoon />}
       </span>
     </Button>
   );

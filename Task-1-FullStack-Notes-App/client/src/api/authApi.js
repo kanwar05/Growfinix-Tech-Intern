@@ -19,3 +19,13 @@ export const fetchMe = async () => {
   const { data } = await http.get("/auth/me");
   return data;
 };
+
+export const updateProfile = async (payload) => {
+  const { data } = await http.patch("/auth/me", payload);
+  return data;
+};
+
+export const updatePassword = async (payload) => {
+  const { data } = await http.patch("/auth/password", payload);
+  return data;
+};

@@ -1,18 +1,28 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/useAuth";
+import { useTheme } from "./context/useTheme";
 import Archive from "./pages/Archive";
 import CreateNote from "./pages/CreateNote";
 import Dashboard from "./pages/Dashboard";
 import EditNote from "./pages/EditNote";
 import Login from "./pages/Login";
 import NoteDetails from "./pages/NoteDetails";
+import Settings from "./pages/Settings";
 import Signup from "./pages/Signup";
 import Trash from "./pages/Trash";
 
 const App = () => {
-  const { loadingUser } = useAuth();
+  const { loadingUser, user } = useAuth();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    if (user?.themePreference) {
+      setTheme(user.themePreference);
+    }
+  }, [setTheme, user?.themePreference]);
 
   if (loadingUser) {
     return (
@@ -34,6 +44,7 @@ const App = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/archive" element={<Archive />} />
           <Route path="/trash" element={<Trash />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/notes/new" element={<CreateNote />} />
           <Route path="/notes/:id" element={<NoteDetails />} />
           <Route path="/notes/:id/edit" element={<EditNote />} />

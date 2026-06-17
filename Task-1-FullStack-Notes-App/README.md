@@ -1,6 +1,6 @@
 # Full-Stack Notes App
 
-A beginner-friendly, production-style Notes App built with React, Vite, React Router, Tailwind CSS, Node.js, Express, MongoDB, Mongoose, JWT auth in HTTP-only cookies, bcrypt password hashing, protected routes, owner-only note access, Markdown preview, pinned notes, archived notes, trash/restore, search, and tag/category filters.
+A beginner-friendly, production-style Notes App built with React, Vite, React Router, Tailwind CSS, Node.js, Express, MongoDB, Mongoose, JWT auth in HTTP-only cookies, bcrypt password hashing, protected routes, owner-only note access, profile settings, Markdown preview, pinned notes, archived notes, trash/restore, search, and tag/category filters.
 
 ## Project Structure
 
@@ -10,7 +10,7 @@ Task-1-FullStack-Notes-App/
     src/api/              Axios API functions
     src/components/       Reusable UI, layout, auth, route, and note components
     src/context/          Auth, theme, and toast providers
-    src/pages/            Login, Signup, Dashboard, Archive, Trash, Create, Edit, Details
+    src/pages/            Login, Signup, Dashboard, Archive, Trash, Settings, Create, Edit, Details
   server/                 Express + MongoDB backend
     src/config/           MongoDB connection
     src/controllers/      Auth and notes controllers
@@ -31,6 +31,7 @@ Task-1-FullStack-Notes-App/
 - Dedicated archive page for reviewing, restoring, or deleting archived notes
 - Trash and restore system so normal deletes are recoverable
 - Permanent delete flow from Trash with confirmation modal
+- Account settings page for updating name, email, avatar, password, and theme preference
 - Login/register rate limiting
 - Notes dashboard with search, tag filter, and category filter
 - Markdown note editor with live preview
@@ -42,6 +43,7 @@ Task-1-FullStack-Notes-App/
 - Toast notifications for auth and note actions
 - Skeleton loaders for note loading states
 - Custom delete confirmation modal
+- Avatar support with PNG, JPG, or WebP data uploads
 
 ## UI Features
 
@@ -50,6 +52,7 @@ Task-1-FullStack-Notes-App/
 - Improved auth pages with centered cards, subtle background pattern, validation messages, loading states, and password visibility toggle.
 - Create/Edit pages with a clean editor panel, tag previews, desktop side-by-side Markdown preview, and mobile stacked layout.
 - Note details page with large title, metadata, rendered Markdown, tags, back link, and safe delete flow.
+- Account management page with profile, avatar upload, theme preference, and password update forms.
 - Accessible focus states, aria labels for notifications/modals, keyboard-friendly controls, and responsive layouts for mobile, tablet, and desktop.
 
 ## Light/Dark Mode
@@ -57,7 +60,7 @@ Task-1-FullStack-Notes-App/
 Use the `Light`/`Dark` toggle in the top navigation after logging in.
 
 - On first load, the app detects the system color scheme with `prefers-color-scheme`.
-- The selected theme is saved in `localStorage` under `notes-theme`.
+- The selected theme is saved in `localStorage` under `notes-theme` and can be saved to the user profile from Settings.
 - Theme styles are applied through the `dark` class on `document.documentElement`.
 - Tailwind `dark:` utilities keep pages and reusable components consistent across both themes.
 
@@ -79,6 +82,8 @@ Auth:
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
 - `GET /api/auth/me`
+- `PATCH /api/auth/me`
+- `PATCH /api/auth/password`
 
 Notes:
 
