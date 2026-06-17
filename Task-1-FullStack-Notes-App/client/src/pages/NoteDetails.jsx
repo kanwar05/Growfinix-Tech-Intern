@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiEdit3, FiMapPin, FiTrash2 } from "react-icons/fi";
-import { deleteNote, fetchNote } from "../api/notesApi";
+import { FiArchive, FiArrowLeft, FiEdit3, FiMapPin, FiTrash2 } from "react-icons/fi";
+import { deleteNote, fetchNote, toggleArchiveNote } from "../api/notesApi";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
 import Modal from "../components/Modal";
@@ -18,6 +18,7 @@ const NoteDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [archiving, setArchiving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
@@ -54,6 +55,29 @@ const NoteDetails = () => {
     }
   };
 
+  const handleToggleArchive = async () => {
+    setArchiving(true);
+    setError("");
+
+    try {
+      const data = await toggleArchiveNote(id);
+      setNote(data.note);
+      showToast({
+        type: "success",
+        title: data.note.isArchived ? "Note archived" : "Note unarchived",
+      });
+    } catch (err) {
+      setError(err.message);
+      showToast({
+        type: "error",
+        title: "Archive update failed",
+        message: err.message,
+      });
+    } finally {
+      setArchiving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="grid gap-5 sm:grid-cols-2">
@@ -77,11 +101,11 @@ const NoteDetails = () => {
   return (
     <article className="grid gap-7">
       <Link
-        to="/"
+        to={note.isArchived ? "/archive" : "/"}
         className="inline-flex w-fit items-center gap-2 rounded-full px-1 text-sm font-bold text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
       >
         <FiArrowLeft aria-hidden="true" />
-        Back to dashboard
+        Back to {note.isArchived ? "archive" : "dashboard"}
       </Link>
 
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -104,6 +128,14 @@ const NoteDetails = () => {
             <FiEdit3 aria-hidden="true" /> Edit
           </Link>
           <Button
+            variant={note.isArchived ? "soft" : "default"}
+            onClick={handleToggleArchive}
+            disabled={archiving}
+          >
+            <FiArchive aria-hidden="true" />
+            {archiving ? "Updating..." : note.isArchived ? "Unarchive" : "Archive"}
+          </Button>
+          <Button
             variant="danger"
             onClick={() => setShowDeleteModal(true)}
             disabled={deleting}
@@ -121,6 +153,11 @@ const NoteDetails = () => {
       )}
 
       <div className="flex flex-wrap gap-2">
+        {note.isArchived && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+            <FiArchive aria-hidden="true" /> Archived
+          </span>
+        )}
         {note.isPinned && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
             <FiMapPin aria-hidden="true" /> Pinned

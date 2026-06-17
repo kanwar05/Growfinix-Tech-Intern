@@ -17,8 +17,11 @@ const normalizeTags = (tags) => {
 };
 
 const buildFilters = (req) => {
-  const { search, tag, category } = req.query;
-  const filters = { owner: req.user._id };
+  const { search, tag, category, archived } = req.query;
+  const filters = {
+    owner: req.user._id,
+    isArchived: archived === "true",
+  };
 
   if (tag) {
     filters.tags = String(tag).trim().toLowerCase();
@@ -154,6 +157,34 @@ exports.togglePinNote = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: note.isPinned ? "Note pinned" : "Note unpinned",
+      note,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.toggleArchiveNote = async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid note id" });
+    }
+
+    const note = await Note.findOne({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
+
+    if (!note) {
+      return res.status(404).json({ success: false, message: "Note not found" });
+    }
+
+    note.isArchived = !note.isArchived;
+    await note.save();
+
+    res.status(200).json({
+      success: true,
+      message: note.isArchived ? "Note archived" : "Note unarchived",
       note,
     });
   } catch (error) {

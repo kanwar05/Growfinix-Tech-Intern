@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiPlus, FiSearch, FiSliders } from "react-icons/fi";
-import { deleteNote, fetchNotes, togglePinNote } from "../api/notesApi";
+import {
+  deleteNote,
+  fetchNotes,
+  toggleArchiveNote,
+  togglePinNote,
+} from "../api/notesApi";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
 import Input from "../components/Input";
@@ -19,6 +24,7 @@ const Dashboard = () => {
   const [noteToDelete, setNoteToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [pinningNoteId, setPinningNoteId] = useState(null);
+  const [archivingNoteId, setArchivingNoteId] = useState(null);
 
   useEffect(() => {
     const loadNotes = async () => {
@@ -121,6 +127,29 @@ const Dashboard = () => {
       showToast({ type: "error", title: "Pin update failed", message: err.message });
     } finally {
       setPinningNoteId(null);
+    }
+  };
+
+  const handleToggleArchive = async (note) => {
+    setArchivingNoteId(note._id);
+
+    try {
+      const data = await toggleArchiveNote(note._id);
+      setNotes((currentNotes) =>
+        currentNotes.filter((currentNote) => currentNote._id !== note._id),
+      );
+      showToast({
+        type: "success",
+        title: data.note.isArchived ? "Note archived" : "Note unarchived",
+      });
+    } catch (err) {
+      showToast({
+        type: "error",
+        title: "Archive update failed",
+        message: err.message,
+      });
+    } finally {
+      setArchivingNoteId(null);
     }
   };
 
@@ -262,7 +291,9 @@ const Dashboard = () => {
               note={note}
               onDelete={setNoteToDelete}
               onTogglePin={handleTogglePin}
+              onToggleArchive={handleToggleArchive}
               pinning={pinningNoteId === note._id}
+              archiving={archivingNoteId === note._id}
             />
           ))}
         </div>

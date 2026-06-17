@@ -25,6 +25,11 @@ export const togglePinNote = async (id) => {
   return data;
 };
 
+export const toggleArchiveNote = async (id) => {
+  const { data } = await http.patch(`/notes/${id}/archive`);
+  return data;
+};
+
 export const deleteNote = async (id) => {
   const { data } = await http.delete(`/notes/${id}`);
   return data;

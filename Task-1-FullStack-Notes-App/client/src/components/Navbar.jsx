@@ -3,7 +3,7 @@ import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast";
 import Button from "./Button";
 import ThemeToggle from "./ThemeToggle";
-import { FiEdit3, FiHome, FiLogOut, FiPlus } from "react-icons/fi";
+import { FiArchive, FiEdit3, FiHome, FiLogOut, FiPlus } from "react-icons/fi";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -57,6 +57,18 @@ const Navbar = () => {
           }
         >
           <FiPlus aria-hidden="true" /> Create
+        </NavLink>
+        <NavLink
+          to="/archive"
+          className={({ isActive }) =>
+            `inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition ${
+              isActive
+                ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-200"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+            }`
+          }
+        >
+          <FiArchive aria-hidden="true" /> Archive
         </NavLink>
       </nav>
       <div className="flex flex-wrap items-center gap-2 md:justify-end">

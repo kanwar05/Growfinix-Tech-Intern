@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/useAuth";
+import Archive from "./pages/Archive";
 import CreateNote from "./pages/CreateNote";
 import Dashboard from "./pages/Dashboard";
 import EditNote from "./pages/EditNote";
@@ -30,6 +31,7 @@ const App = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/archive" element={<Archive />} />
           <Route path="/notes/new" element={<CreateNote />} />
           <Route path="/notes/:id" element={<NoteDetails />} />
           <Route path="/notes/:id/edit" element={<EditNote />} />

@@ -1,10 +1,17 @@
 import { Link } from "react-router-dom";
-import { FiEdit3, FiEye, FiMapPin, FiTrash2 } from "react-icons/fi";
+import { FiArchive, FiEdit3, FiEye, FiMapPin, FiTrash2 } from "react-icons/fi";
 import { formatDate } from "../utils/formatDate";
 import Button from "./Button";
 import Card from "./Card";
 
-const NoteCard = ({ note, onDelete, onTogglePin, pinning = false }) => {
+const NoteCard = ({
+  note,
+  onDelete,
+  onTogglePin,
+  onToggleArchive,
+  pinning = false,
+  archiving = false,
+}) => {
   return (
     <Card
       as="article"
@@ -17,6 +24,11 @@ const NoteCard = ({ note, onDelete, onTogglePin, pinning = false }) => {
           {note.isPinned && (
             <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-blue-50 px-3 text-xs font-black uppercase tracking-wide text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
               <FiMapPin aria-hidden="true" /> Pinned
+            </span>
+          )}
+          {note.isArchived && (
+            <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-amber-50 px-3 text-xs font-black uppercase tracking-wide text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+              <FiArchive aria-hidden="true" /> Archived
             </span>
           )}
           <span className="inline-flex min-h-7 items-center rounded-full bg-emerald-50 px-3 text-xs font-black uppercase tracking-wide text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
@@ -66,6 +78,16 @@ const NoteCard = ({ note, onDelete, onTogglePin, pinning = false }) => {
         >
           <FiMapPin aria-hidden="true" />
           {pinning ? "Updating..." : note.isPinned ? "Unpin" : "Pin"}
+        </Button>
+        <Button
+          size="sm"
+          variant={note.isArchived ? "soft" : "default"}
+          onClick={() => onToggleArchive(note)}
+          disabled={archiving}
+          aria-pressed={note.isArchived}
+        >
+          <FiArchive aria-hidden="true" />
+          {archiving ? "Updating..." : note.isArchived ? "Unarchive" : "Archive"}
         </Button>
         <Link
           to={`/notes/${note._id}`}
