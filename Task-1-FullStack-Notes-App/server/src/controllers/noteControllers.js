@@ -21,6 +21,7 @@ const buildFilters = (req) => {
   const filters = {
     owner: req.user._id,
     isArchived: archived === "true",
+    isTrashed: false,
   };
 
   if (tag) {
@@ -61,6 +62,23 @@ exports.getNotes = async (req, res, next) => {
   }
 };
 
+exports.getTrashNotes = async (req, res, next) => {
+  try {
+    const notes = await Note.find({
+      owner: req.user._id,
+      isTrashed: true,
+    }).sort({ trashedAt: -1, updatedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: notes.length,
+      notes,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getNote = async (req, res, next) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -70,6 +88,7 @@ exports.getNote = async (req, res, next) => {
     const note = await Note.findOne({
       _id: req.params.id,
       owner: req.user._id,
+      isTrashed: false,
     });
 
     if (!note) {
@@ -115,6 +134,7 @@ exports.updateNote = async (req, res, next) => {
     const note = await Note.findOne({
       _id: req.params.id,
       owner: req.user._id,
+      isTrashed: false,
     });
 
     if (!note) {
@@ -145,6 +165,7 @@ exports.togglePinNote = async (req, res, next) => {
     const note = await Note.findOne({
       _id: req.params.id,
       owner: req.user._id,
+      isTrashed: false,
     });
 
     if (!note) {
@@ -173,6 +194,7 @@ exports.toggleArchiveNote = async (req, res, next) => {
     const note = await Note.findOne({
       _id: req.params.id,
       owner: req.user._id,
+      isTrashed: false,
     });
 
     if (!note) {
@@ -198,16 +220,70 @@ exports.deleteNote = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Invalid note id" });
     }
 
-    const note = await Note.findOneAndDelete({
+    const note = await Note.findOne({
       _id: req.params.id,
       owner: req.user._id,
+      isTrashed: false,
     });
 
     if (!note) {
       return res.status(404).json({ success: false, message: "Note not found" });
     }
 
-    res.status(200).json({ success: true, message: "Note deleted" });
+    note.isTrashed = true;
+    note.trashedAt = new Date();
+    note.isPinned = false;
+    await note.save();
+
+    res.status(200).json({ success: true, message: "Note moved to trash", note });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.restoreNote = async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid note id" });
+    }
+
+    const note = await Note.findOne({
+      _id: req.params.id,
+      owner: req.user._id,
+      isTrashed: true,
+    });
+
+    if (!note) {
+      return res.status(404).json({ success: false, message: "Note not found in trash" });
+    }
+
+    note.isTrashed = false;
+    note.trashedAt = null;
+    await note.save();
+
+    res.status(200).json({ success: true, message: "Note restored", note });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.permanentlyDeleteNote = async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid note id" });
+    }
+
+    const note = await Note.findOneAndDelete({
+      _id: req.params.id,
+      owner: req.user._id,
+      isTrashed: true,
+    });
+
+    if (!note) {
+      return res.status(404).json({ success: false, message: "Note not found in trash" });
+    }
+
+    res.status(200).json({ success: true, message: "Note permanently deleted" });
   } catch (error) {
     next(error);
   }

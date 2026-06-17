@@ -9,6 +9,7 @@ import EditNote from "./pages/EditNote";
 import Login from "./pages/Login";
 import NoteDetails from "./pages/NoteDetails";
 import Signup from "./pages/Signup";
+import Trash from "./pages/Trash";
 
 const App = () => {
   const { loadingUser } = useAuth();
@@ -32,6 +33,7 @@ const App = () => {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/archive" element={<Archive />} />
+          <Route path="/trash" element={<Trash />} />
           <Route path="/notes/new" element={<CreateNote />} />
           <Route path="/notes/:id" element={<NoteDetails />} />
           <Route path="/notes/:id/edit" element={<EditNote />} />

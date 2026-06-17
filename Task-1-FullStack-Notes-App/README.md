@@ -1,6 +1,6 @@
 # Full-Stack Notes App
 
-A beginner-friendly, production-style Notes App built with React, Vite, React Router, Tailwind CSS, Node.js, Express, MongoDB, Mongoose, JWT auth in HTTP-only cookies, bcrypt password hashing, protected routes, owner-only note access, Markdown preview, pinned notes, archived notes, search, and tag/category filters.
+A beginner-friendly, production-style Notes App built with React, Vite, React Router, Tailwind CSS, Node.js, Express, MongoDB, Mongoose, JWT auth in HTTP-only cookies, bcrypt password hashing, protected routes, owner-only note access, Markdown preview, pinned notes, archived notes, trash/restore, search, and tag/category filters.
 
 ## Project Structure
 
@@ -10,7 +10,7 @@ Task-1-FullStack-Notes-App/
     src/api/              Axios API functions
     src/components/       Reusable UI, layout, auth, route, and note components
     src/context/          Auth, theme, and toast providers
-    src/pages/            Login, Signup, Dashboard, Archive, Create, Edit, Details
+    src/pages/            Login, Signup, Dashboard, Archive, Trash, Create, Edit, Details
   server/                 Express + MongoDB backend
     src/config/           MongoDB connection
     src/controllers/      Auth and notes controllers
@@ -29,6 +29,8 @@ Task-1-FullStack-Notes-App/
 - Pin and unpin important notes, with pinned notes shown first
 - Archive and unarchive notes, with archived notes hidden from the main dashboard
 - Dedicated archive page for reviewing, restoring, or deleting archived notes
+- Trash and restore system so normal deletes are recoverable
+- Permanent delete flow from Trash with confirmation modal
 - Login/register rate limiting
 - Notes dashboard with search, tag filter, and category filter
 - Markdown note editor with live preview
@@ -44,7 +46,7 @@ Task-1-FullStack-Notes-App/
 ## UI Features
 
 - Tailwind CSS design system with class-based dark mode, polished cards, gradients, shadows, focus rings, and responsive spacing.
-- Modern dashboard with polished note cards, pinned/archive badges, quick filter chips, search, empty state artwork, and card-level Pin/Archive/View/Edit/Delete actions.
+- Modern dashboard with polished note cards, pinned/archive badges, quick filter chips, search, empty state artwork, and card-level Pin/Archive/View/Edit/Trash actions.
 - Improved auth pages with centered cards, subtle background pattern, validation messages, loading states, and password visibility toggle.
 - Create/Edit pages with a clean editor panel, tag previews, desktop side-by-side Markdown preview, and mobile stacked layout.
 - Note details page with large title, metadata, rendered Markdown, tags, back link, and safe delete flow.
@@ -81,12 +83,15 @@ Auth:
 Notes:
 
 - `GET /api/notes`
+- `GET /api/notes/trash`
 - `GET /api/notes/:id`
 - `POST /api/notes`
 - `PUT /api/notes/:id`
 - `PATCH /api/notes/:id/pin`
 - `PATCH /api/notes/:id/archive`
+- `PATCH /api/notes/:id/restore`
 - `DELETE /api/notes/:id`
+- `DELETE /api/notes/:id/permanent`
 
 `GET /api/notes` supports query params:
 
@@ -95,7 +100,9 @@ Notes:
 - `category=work`
 - `archived=true`
 
-By default, `GET /api/notes` returns only non-archived notes for the dashboard. Use `archived=true` to load the archive page. Pinned notes are returned before unpinned notes, then sorted by latest update.
+By default, `GET /api/notes` returns only non-trashed notes. The dashboard receives non-archived notes, and `archived=true` loads the archive page. Pinned notes are returned before unpinned notes, then sorted by latest update.
+
+`DELETE /api/notes/:id` moves a note to Trash by setting `isTrashed` and `trashedAt`. Use `PATCH /api/notes/:id/restore` to restore it, or `DELETE /api/notes/:id/permanent` to permanently delete it from Trash.
 
 ## Environment Variables
 

@@ -37,6 +37,14 @@ const noteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isTrashed: {
+      type: Boolean,
+      default: false,
+    },
+    trashedAt: {
+      type: Date,
+      default: null,
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

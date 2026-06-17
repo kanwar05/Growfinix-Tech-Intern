@@ -46,8 +46,8 @@ const NoteDetails = () => {
 
     try {
       await deleteNote(id);
-      showToast({ type: "success", title: "Note deleted" });
-      navigate("/", { replace: true });
+      showToast({ type: "success", title: "Note moved to trash" });
+      navigate("/trash", { replace: true });
     } catch (err) {
       setError(err.message);
       showToast({ type: "error", title: "Delete failed", message: err.message });
@@ -185,9 +185,9 @@ const NoteDetails = () => {
 
       <Modal
         open={showDeleteModal}
-        title="Delete this note?"
-        description={`"${note.title}" will be permanently removed.`}
-        confirmLabel="Delete note"
+        title="Move this note to trash?"
+        description={`"${note.title}" will leave your workspace, but you can restore it from Trash.`}
+        confirmLabel="Move to trash"
         loading={deleting}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}

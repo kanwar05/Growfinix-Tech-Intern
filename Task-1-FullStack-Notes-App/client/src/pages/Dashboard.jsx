@@ -89,7 +89,7 @@ const Dashboard = () => {
       setNotes((currentNotes) =>
         currentNotes.filter((note) => note._id !== noteToDelete._id),
       );
-      showToast({ type: "success", title: "Note deleted" });
+      showToast({ type: "success", title: "Note moved to trash" });
       setNoteToDelete(null);
     } catch (err) {
       showToast({ type: "error", title: "Delete failed", message: err.message });
@@ -301,9 +301,9 @@ const Dashboard = () => {
 
       <Modal
         open={Boolean(noteToDelete)}
-        title="Delete this note?"
-        description={`"${noteToDelete?.title}" will be permanently removed.`}
-        confirmLabel="Delete note"
+        title="Move this note to trash?"
+        description={`"${noteToDelete?.title}" will leave your dashboard, but you can restore it from Trash.`}
+        confirmLabel="Move to trash"
         loading={deleting}
         onClose={() => setNoteToDelete(null)}
         onConfirm={confirmDelete}
