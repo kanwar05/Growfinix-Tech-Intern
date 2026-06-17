@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiEdit3, FiTrash2 } from "react-icons/fi";
+import { FiArrowLeft, FiEdit3, FiMapPin, FiTrash2 } from "react-icons/fi";
 import { deleteNote, fetchNote } from "../api/notesApi";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
@@ -121,6 +121,11 @@ const NoteDetails = () => {
       )}
 
       <div className="flex flex-wrap gap-2">
+        {note.isPinned && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+            <FiMapPin aria-hidden="true" /> Pinned
+          </span>
+        )}
         {note.tags?.length ? (
           note.tags.map((tag) => (
             <span

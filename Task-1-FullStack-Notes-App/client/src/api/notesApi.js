@@ -20,6 +20,11 @@ export const updateNote = async (id, payload) => {
   return data;
 };
 
+export const togglePinNote = async (id) => {
+  const { data } = await http.patch(`/notes/${id}/pin`);
+  return data;
+};
+
 export const deleteNote = async (id) => {
   const { data } = await http.delete(`/notes/${id}`);
   return data;

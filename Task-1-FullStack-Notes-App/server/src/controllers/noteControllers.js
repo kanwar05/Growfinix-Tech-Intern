@@ -43,7 +43,10 @@ const buildFilters = (req) => {
 
 exports.getNotes = async (req, res, next) => {
   try {
-    const notes = await Note.find(buildFilters(req)).sort({ updatedAt: -1 });
+    const notes = await Note.find(buildFilters(req)).sort({
+      isPinned: -1,
+      updatedAt: -1,
+    });
 
     res.status(200).json({
       success: true,
@@ -125,6 +128,34 @@ exports.updateNote = async (req, res, next) => {
     await note.save();
 
     res.status(200).json({ success: true, note });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.togglePinNote = async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid note id" });
+    }
+
+    const note = await Note.findOne({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
+
+    if (!note) {
+      return res.status(404).json({ success: false, message: "Note not found" });
+    }
+
+    note.isPinned = !note.isPinned;
+    await note.save();
+
+    res.status(200).json({
+      success: true,
+      message: note.isPinned ? "Note pinned" : "Note unpinned",
+      note,
+    });
   } catch (error) {
     next(error);
   }

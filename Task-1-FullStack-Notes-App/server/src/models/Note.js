@@ -29,6 +29,10 @@ const noteSchema = new mongoose.Schema(
       default: "general",
       lowercase: true,
     },
+    isPinned: {
+      type: Boolean,
+      default: false,
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

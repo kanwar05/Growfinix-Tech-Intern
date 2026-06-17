@@ -1,6 +1,6 @@
 # Full-Stack Notes App
 
-A beginner-friendly, production-style Notes App built with React, Vite, React Router, Node.js, Express, MongoDB, Mongoose, JWT auth in HTTP-only cookies, bcrypt password hashing, protected routes, owner-only note access, Markdown preview, search, and tag/category filters.
+A beginner-friendly, production-style Notes App built with React, Vite, React Router, Tailwind CSS, Node.js, Express, MongoDB, Mongoose, JWT auth in HTTP-only cookies, bcrypt password hashing, protected routes, owner-only note access, Markdown preview, pinned notes, search, and tag/category filters.
 
 ## Project Structure
 
@@ -26,6 +26,7 @@ Task-1-FullStack-Notes-App/
 - JWT stored in HTTP-only cookies
 - Protected frontend routes and protected notes API routes
 - Owner-only create, read, update, and delete access for notes
+- Pin and unpin important notes, with pinned notes shown first
 - Login/register rate limiting
 - Notes dashboard with search, tag filter, and category filter
 - Markdown note editor with live preview
@@ -40,8 +41,8 @@ Task-1-FullStack-Notes-App/
 
 ## UI Features
 
-- CSS-variable design system for colors, surfaces, borders, shadows, focus rings, and spacing.
-- Modern dashboard with polished note cards, quick filter chips, search, empty state artwork, and card-level View/Edit/Delete actions.
+- Tailwind CSS design system with class-based dark mode, polished cards, gradients, shadows, focus rings, and responsive spacing.
+- Modern dashboard with polished note cards, pinned badges, quick filter chips, search, empty state artwork, and card-level Pin/View/Edit/Delete actions.
 - Improved auth pages with centered cards, subtle background pattern, validation messages, loading states, and password visibility toggle.
 - Create/Edit pages with a clean editor panel, tag previews, desktop side-by-side Markdown preview, and mobile stacked layout.
 - Note details page with large title, metadata, rendered Markdown, tags, back link, and safe delete flow.
@@ -53,8 +54,8 @@ Use the `Light`/`Dark` toggle in the top navigation after logging in.
 
 - On first load, the app detects the system color scheme with `prefers-color-scheme`.
 - The selected theme is saved in `localStorage` under `notes-theme`.
-- Theme styles are applied through `document.documentElement.dataset.theme`.
-- Both themes use the same CSS variables, so pages and reusable components stay consistent.
+- Theme styles are applied through the `dark` class on `document.documentElement`.
+- Tailwind `dark:` utilities keep pages and reusable components consistent across both themes.
 
 ## Screenshots
 
@@ -81,6 +82,7 @@ Notes:
 - `GET /api/notes/:id`
 - `POST /api/notes`
 - `PUT /api/notes/:id`
+- `PATCH /api/notes/:id/pin`
 - `DELETE /api/notes/:id`
 
 `GET /api/notes` supports query params:
@@ -88,6 +90,8 @@ Notes:
 - `search=keyword`
 - `tag=react`
 - `category=work`
+
+Pinned notes are returned before unpinned notes, then sorted by latest update.
 
 ## Environment Variables
 

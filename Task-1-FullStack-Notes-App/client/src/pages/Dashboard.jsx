@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiPlus, FiSearch, FiSliders } from "react-icons/fi";
-import { deleteNote, fetchNotes } from "../api/notesApi";
+import { deleteNote, fetchNotes, togglePinNote } from "../api/notesApi";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
 import Input from "../components/Input";
@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [error, setError] = useState("");
   const [noteToDelete, setNoteToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [pinningNoteId, setPinningNoteId] = useState(null);
 
   useEffect(() => {
     const loadNotes = async () => {
@@ -88,6 +89,38 @@ const Dashboard = () => {
       showToast({ type: "error", title: "Delete failed", message: err.message });
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const sortPinnedFirst = (noteList) =>
+    [...noteList].sort((first, second) => {
+      if (first.isPinned !== second.isPinned) {
+        return Number(second.isPinned) - Number(first.isPinned);
+      }
+
+      return new Date(second.updatedAt) - new Date(first.updatedAt);
+    });
+
+  const handleTogglePin = async (note) => {
+    setPinningNoteId(note._id);
+
+    try {
+      const data = await togglePinNote(note._id);
+      setNotes((currentNotes) =>
+        sortPinnedFirst(
+          currentNotes.map((currentNote) =>
+            currentNote._id === note._id ? data.note : currentNote,
+          ),
+        ),
+      );
+      showToast({
+        type: "success",
+        title: data.note.isPinned ? "Note pinned" : "Note unpinned",
+      });
+    } catch (err) {
+      showToast({ type: "error", title: "Pin update failed", message: err.message });
+    } finally {
+      setPinningNoteId(null);
     }
   };
 
@@ -224,7 +257,13 @@ const Dashboard = () => {
       {!loading && notes.length > 0 && (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {notes.map((note) => (
-            <NoteCard key={note._id} note={note} onDelete={setNoteToDelete} />
+            <NoteCard
+              key={note._id}
+              note={note}
+              onDelete={setNoteToDelete}
+              onTogglePin={handleTogglePin}
+              pinning={pinningNoteId === note._id}
+            />
           ))}
         </div>
       )}

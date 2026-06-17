@@ -23,7 +23,7 @@ const Toast = ({ toast, onClose }) => {
       </div>
       <Button
         aria-label="Dismiss notification"
-        className="min-h-8 w-8 px-0 py-0"
+        className="min-h-12 w-12 px-0 py-0"
         size="sm"
         variant="ghost"
         onClick={() => onClose(toast.id)}
